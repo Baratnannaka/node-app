@@ -6,7 +6,15 @@ pipeline{
     stages{
         stage('Build Docker Image'){
             steps{
-                sh "docker build . -t dhoni/nodeapp:${DOCKER_TAG}"
+                sh "docker build -t dhoni/nodeapp:${DOCKER_TAG}"
+            }
+        }
+        stage('DockerHub Push'){
+            steps{
+                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerhubpwd')]) {
+                    sh "docker login -u dhoni -p ${dockerhubpwd}"
+                    sh "docker push dhoni/nodeapp:${DOCKER_TAG}"
+                }
             }
         }
     }
