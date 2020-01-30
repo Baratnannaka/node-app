@@ -1,4 +1,4 @@
-pipeline{
+pipeline {
     agent any
     environment{
         DOCKER_TAG = getDockerTag()
@@ -6,13 +6,13 @@ pipeline{
     stages{
         stage('Build Docker Image'){
             steps{
-                sh "docker build . -t dhoni/nodeapp:${DOCKER_TAG}"
+                sh "docker build . -t dhoni/nodeapp:${DOCKER_TAG} "
             }
         }
         stage('DockerHub Push'){
             steps{
-                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerhubpwd')]) {
-                    sh "docker login -u dhoni -p ${dockerhubpwd}"
+                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerHubPwd')]) {
+                    sh "docker login -u dhoni -p ${dockerHubPwd}"
                     sh "docker push dhoni/nodeapp:${DOCKER_TAG}"
                 }
             }
@@ -21,13 +21,12 @@ pipeline{
             steps{
                 sh "chmod +x changeTag.sh"
                 sh "./changeTag.sh ${DOCKER_TAG}"
-                sshagent(['kops-mechine']) {
+                sshagent(['kops-machine']) {
                     sh "scp -o StrictHostKeyChecking=no services.yml node-app-pod.yml ec2-user@13.233.40.159:/home/ec2-user/"
                     script{
                         try{
                             sh "ssh ec2-user@13.233.40.159 kubectl apply -f ."
-                            
-                        }catch(erroe){
+                        }catch(error){
                             sh "ssh ec2-user@13.233.40.159 kubectl create -f ."
                         }
                     }
@@ -38,6 +37,6 @@ pipeline{
 }
 
 def getDockerTag(){
-    def tag = sh script: 'git rev-parse HEAD', restunStdout: true
+    def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
     return tag
 }
