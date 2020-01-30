@@ -17,6 +17,23 @@ pipeline{
                 }
             }
         }
+        stage('Deploy to k8s'){
+            steps{
+                sh "chmod +x changeTag.sh"
+                sh "./changeTag.sh ${DOCKER_TAG}"
+                sshagent(['kops-mechine']) {
+                    sh "scp -o StrictHostKeyChecking=no services.yml node-app-pod.yml ec2-user@172.31.13.139:/home/ec2-user/"
+                    script{
+                        try{
+                            sh "ssh ec2-user@172.31.13.139 kubectl apply -f ."
+                            
+                        }catch(erroe){
+                            sh "ssh ec2-user@172.31.13.139 kubectl create -f ."
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
