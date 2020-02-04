@@ -7,6 +7,6 @@ metadata:
 spec:
   containers:
     - name: nodeapp
-      image: dhoni/nodeapp:tagVersion
+      image: dhoni/nodeapp
       ports:
         - containerPort: 8080
