@@ -11,10 +11,8 @@ pipeline {
         }
         stage('DockerHub Push'){
             steps{
-                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerHubPwd')]) {
-                    sh "docker login -u dhoni -p ${dockerHubPwd}"
+                 sh "docker login -u dhoni -p bharath*22"
                     sh "docker push dhoni/nodeapp:${DOCKER_TAG}"
-                }
             }
         }
         stage('Deploy to k8s'){
