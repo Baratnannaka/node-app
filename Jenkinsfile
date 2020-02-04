@@ -1,3 +1,4 @@
+currentBuild.displayName = "sample-k8s#"+currentBuild.number
 pipeline {
     agent any
     environment{
